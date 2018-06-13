@@ -1,6 +1,6 @@
-node_modules/
-build/
-config/
-src/
+/node_modules/
+/build/
+/config/
+/src
 .postcssrc.js
 .babelrc
