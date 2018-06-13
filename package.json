@@ -1,6 +1,6 @@
 {
   "name": "fzm-ui",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "dist/main.js",
   "scripts": {
     "build": "npx webpack --config build/webpack.config.js --mode production",
