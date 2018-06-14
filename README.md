@@ -11,17 +11,18 @@ import Vue from 'vue'
 import FzmUI from "fzm-ui"
 Vue.use(FzmUI);
 ```
-### FzmLogReg组件需要传递三个参数  
-`api`:存放所有登录注册相关的http接口方法的对象 详细请查看下面  
-`platkey`:项目标记  
-`callback`:登录和注册成功之后的回调方法 详细请查看下面  
+### FzmLogReg组件需要传递四个参数  
+`api`: Object 存放所有登录注册相关的http接口方法的对象 详细请查看下面  
+`platkey`: String 项目标记  
+`callback`: Function 登录和注册成功之后的回调方法 详细请查看下面  
+`open`: Boolean 是否显示登录注册弹框  
 
 ### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg
 ```vue
 <template lang="html">
   <div>
     这里是登录注册的例子
-    <FzmLogReg v-bind:api="api" v-bind:platkey="'zhaobi'" v-bind:callback="cb"></FzmLogReg>
+    <FzmLogReg :api="api" :platkey="'zhaobi'" :callback="cb" :open="open" ></FzmLogReg>
   </div>
 </template>
 
@@ -33,12 +34,14 @@ export default {
       api,
       cb(type,res){
         console.log(type,res);
-      }
+      },
+      open:true
     }
   }
 }
 </script>
 ```
+
 ### 附录`./api.js`
 ```javascript
 const api = {
@@ -81,6 +84,29 @@ export default {
   }
 }
 ```
+
+## 记住密码
+点击记住密码会生成一个包含用户登录信息的cookie,cookie名为userinfo,值为一个json字符串
+```
+{
+  "area":{
+    "code":"+86",
+    "name":"中国"
+  },
+  "mobile":{
+    "type":"sms",
+    "number":"15888888888",
+    "password":"88888888"
+  },
+  "email":{
+    "number":"88888888@163.com",
+    "password":"88888888"
+  }
+}
+```
+可以使用JSON.parse可以解析出该用户信息,然后进行操作
+
+
 ## 功能完成情况
 
 - [x] ~~手机邮箱切换~~  
@@ -93,6 +119,7 @@ export default {
 - [ ] 手机找回密码  
 - [x] ~~邮箱设置密码~~  
 - [x] ~~邮箱密码登录~~  
+- [x] ~~记住密码~~  
 - [ ] 邮箱找回密码  
 - [ ] icon选择性添加  
 - [x] ~~登录防刷验证码~~  
