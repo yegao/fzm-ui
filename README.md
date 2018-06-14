@@ -45,24 +45,27 @@ export default {
 ### 附录`./api.js`
 ```javascript
 const api = {
-  getRegisterState(params){ //判断是否已注册
-    return restfuls.get(注册接口地址,{ params });
+  getRegisterState(params){ //判断是否已注册。注意!get方式的请求params外面需要包裹一个大括号
+    return restfuls.get(注册的接口地址,{ params });
   },
   getCodeBySms(params){ //获取短信验证码 post参数不需要加大括号
-    return restfuls.post(获取短信验证码接口地址,params);
+    return restfuls.post(获取短信验证码的接口地址,params);
   },
   getCodeByEmail(params){ //获取邮箱验证码
-    return restfuls.post(获取邮箱验证码接口地址,params);
+    return restfuls.post(获取邮箱验证码的接口地址,params);
   },
   getCodeByVoice(params){ //获取语音验证码
-    return restfuls.post(获取语音验证码接口地址,params);
+    return restfuls.post(获取语音验证码的接口地址,params);
   },
   register(params){ //快速注册
-    return restfuls.post(快速注册接口地址,params);
+    return restfuls.post(快速注册的接口地址,params);
   },
   login(params){ //快速登录
-    return restfuls.post(快速登录接口地址,params);
-  }
+    return restfuls.post(快速登录的接口地址,params);
+  },
+  setPassword(params){ //第一次设置密码
+    return restfuls.post(第一次设置密码的接口地址,params);
+  },
 }
 ```
 ### 附录`callback`
@@ -86,7 +89,7 @@ export default {
 ```
 
 ## 记住密码
-点击记住密码会生成一个包含用户登录信息的cookie,cookie名为userinfo,值为一个json字符串
+点击记住密码会生成一个包含用户登录信息的cookie,cookie名为userinfo,有效时间为10天，值为一个json字符串
 ```
 {
   "area":{
