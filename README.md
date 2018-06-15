@@ -66,6 +66,9 @@ const api = {
   setPassword(params){ //第一次设置密码
     return restfuls.post(第一次设置密码的接口地址,params);
   },
+  resetPassword(params){ //找回密码
+    return restfuls.post(找回密码的接口地址,params);
+  }
 }
 ```
 ### 附录`callback`
