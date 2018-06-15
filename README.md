@@ -15,14 +15,14 @@ Vue.use(FzmUI);
 `api`: Object 存放所有登录注册相关的http接口方法的对象 详细请查看下面  
 `platkey`: String 项目标记  
 `callback`: Function 登录和注册成功之后的回调方法 详细请查看下面  
-`open`: Boolean 是否显示登录注册弹框  
+`open`: Boolean 是否显示登录注册弹框,一般情况下这个属性是一个sync属性，所以请在open后面加上.sync  
 
 ### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg
 ```vue
 <template lang="html">
   <div>
     这里是登录注册的例子
-    <FzmLogReg :api="api" :platkey="'zhaobi'" :callback="cb" :open="open" ></FzmLogReg>
+    <FzmLogReg :api="api" :platkey="'zhaobi'" :callback="cb" :open.sync="open" ></FzmLogReg>
   </div>
 </template>
 
