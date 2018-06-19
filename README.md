@@ -16,13 +16,15 @@ Vue.use(FzmUI);
 `platkey`: String 项目标记  
 `callback`: Function 登录和注册成功之后的回调方法 详细请查看下面  
 `open`: Boolean 是否显示登录注册弹框,一般情况下这个属性是一个sync属性，所以请在open后面加上.sync  
+`icon`: String 图标地址,不传递则没有图标,传入'default'则为默认图标(目前是找币的图标，以后会修改成33.cn的logo)  
+`maxsec`: Number 验证码倒计时最大秒数,不传则为60秒   
 
-### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg
+### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg  
 ```vue
 <template lang="html">
   <div>
     这里是登录注册的例子
-    <FzmLogReg :api="api" :platkey="'zhaobi'" :callback="cb" :open.sync="open" ></FzmLogReg>
+    <FzmLogReg :api="api" :platkey="'zhaobi'" :callback="cb" :open.sync="open" :icon="'default'"></FzmLogReg>
   </div>
 </template>
 
@@ -122,14 +124,16 @@ export default {
 - [x] ~~邮箱验证码登录~~  
 - [x] ~~手机设置密码~~   
 - [x] ~~手机密码登录~~  
-- [x] 手机找回密码  
+- [x] ~~手机找回密码~~  
 - [x] ~~邮箱设置密码~~  
 - [x] ~~邮箱密码登录~~  
 - [x] ~~记住密码~~  
-- [x] 邮箱找回密码  
-- [ ] icon选择性添加  
+- [x] ~~邮箱找回密码~~  
+- [x] ~~icon选择性添加~~  
 - [x] ~~登录防刷验证码~~  
+- [x] ~~验证码数秒倒计时~~  
 
 ## 发现BUG  
+- [ ] 有时候腾讯云的验证不出现  
 - [ ] 多次发送验证码之后,进行注册，后台以第一次发送的验证码为正确的验证码,而不是以最后一次发送的验证码为验证码  
 - [x] ~~腾讯云验证码在加载之后虽然进行capDestory操作，但是在html中仍然保留了创建的script(老版本也存在该问题)~~  
