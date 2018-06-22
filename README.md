@@ -115,6 +115,14 @@ export default {
 ```
 可以使用JSON.parse可以解析出该用户信息,然后进行操作
 
+自定义样式配置
+如果你需要自定义样式，请直接编写自己的css样式覆盖默认样式
+.fzm-logreg-wrap{
+  //略
+}
+.fzm-logreg-win{
+  //略
+}
 
 ## 功能完成情况
 
