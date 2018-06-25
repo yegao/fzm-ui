@@ -2,5 +2,5 @@
 /builds/
 /configs/
 /src
-.postcssrc.jss
-.babelrcs
+.postcssrc.js
+.babelrc
