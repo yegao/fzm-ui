@@ -1,6 +1,6 @@
 {
   "name": "fzm-ui",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "main": "dist/main.js",
   "scripts": {
     "build": "node build/build.js",
