@@ -2,8 +2,7 @@
 https://www.33.cn
 
 ## 安装
-
-npm install --save fzm-ui
+npm install --save fzm-ui fzm
 
 ### 使用
 ```javascript
@@ -47,6 +46,7 @@ export default {
 
 ### 附录`./api.js`
 ```javascript
+import {restfuls} from 'fzm';
 const api = {
   getRegisterState(params){ //判断是否已注册。注意!get方式的请求params外面需要包裹一个大括号
     return restfuls.get(注册的接口地址,{ params });
