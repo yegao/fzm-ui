@@ -13,19 +13,21 @@
         <div class="step1">
           <div v-if="type=='mobile'" class="mobile edit-box item">
             <span @click="visible.world = !visible.world" @click.stop>
-                <em class="code">{{params.area.code}}</em>
-                <i class="icon-tog"></i>
+                <em class="code">+{{params.area.code}}</em>
+                <i class="icon-2"></i>
             </span>
             <ul v-if="visible.world" class="world">
               <li class="country" v-for="(item,index) in world" :key="index" @click="chooseArea(item)" @click.stop>
-                <span><em>{{item.code}}</em> {{item.name}}</span>
+                <span><em>{{item.code}}</em> {{item.ch_name}}</span>
               </li>
             </ul>
-            <input v-if="params.area.code==='+86'" @blur="blur" @focus="focus" v-model="chinaMobile" ref="chinaMobile1" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="13" />
-            <input v-else @blur="blur" @focus="focus" v-model="params.mobile.number" @input="input" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="11" />
+            <input v-if="params.area.code==='86'" @blur="blur" @focus="focus" v-model="chinaMobile" ref="chinaMobile1" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="13" />
+            <input v-else @blur="blur" @focus="focus" v-model="params.mobile.number" @input="input" ref="step1mobile" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="11" />
+            <i class="icon-2" style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
           </div>
           <div v-if="type=='email'" class="email edit-box item">
-            <input @blur="blur" @focus="focus" v-model="params.email.number" @input="input" type="text" autocomplete="off" placeholder="请输入邮箱" />
+            <input @blur="blur" @focus="focus" v-model="params.email.number" @input="input" ref="step1email" type="text" autocomplete="off" placeholder="请输入邮箱" />
+            <i class="icon-2" style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
           </div>
         </div>
         <!--验证码登录注册-->
@@ -62,10 +64,10 @@
         <!--密码登录-->
         <div v-if="visible.step==3" class="step3">
           <div v-if="visible.login=='password' && visible.pass" class="edit-box item">
-            <input v-model="params[type].password" @blur="blur" @focus="focus" type="password" autocomplete="new-password" placeholder="请输入密码" class="full center" />
+            <input v-model="params[type].password" @blur="blur" @focus="focus" ref="step3input" type="password" autocomplete="new-password" placeholder="请输入密码" class="full center" />
           </div>
-          <span @click="remember" class="remember-item">
-            <i :class="{'icon iconfont icon-wancheng':userinfoIsRemember}" class="remember-check"></i>
+          <span @click="remember" class="remember-item" :class="{active : userinfoIsRemember}">
+            <i :class="userinfoIsRemember ? 'icon-1': 'icon-3'"></i>
             记住密码
           </span>
           <span @click="step(5)" class="forget-item">忘记密码</span>
@@ -94,7 +96,7 @@
         </div>
       </div>
       <div class="tabc">
-        <div class="item center"><span>验证码已发送至{{type=='mobile' && params.area.code || ""}} {{params[type].number}}</span></div>
+        <div class="item center"><span>验证码已发送至{{type=='mobile' && "+"+params.area.code || ""}} {{params[type].number}}</span></div>
         <div class="edit-box item">
           <input v-model="params.verification.number" class="most" type="text" @blur="blur" @focus="focus" autocomplete="off" placeholder="请输入验证码" />
           <span v-if="params.verification.enable" class="btn-verification" @click="getVerification(null,'set_password')">获取验证码</span>
@@ -120,19 +122,21 @@
       <div class="tabc">
         <div v-if="type=='mobile'" class="edit-box mobile">
           <span @click="visible.world = !visible.world" @click.stop>
-              <em class="code">{{params.area.code}}</em>
-              <i class="icon-tog"></i>
+              <em class="code">+{{params.area.code}}</em>
+              <i class="icon-2"></i>
           </span>
           <ul v-if="visible.world" class="world">
             <li class="country" v-for="(item,index) in world" :key="index" @click="chooseArea(item)" @click.stop>
-              <span><em>{{item.code}}</em> {{item.name}}</span>
+              <span><em>+{{item.code}}</em> {{item.ch_name}}</span>
             </li>
           </ul>
-          <input v-if="params.area.code==='+86'" @blur="blur" @focus="focus" v-model="chinaMobile" ref="chinaMobile2" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="13" />
+          <input v-if="params.area.code==='86'" @blur="blur" @focus="focus" v-model="chinaMobile" ref="chinaMobile2" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="13" />
           <input v-else @blur="blur" @focus="focus" v-model="params.mobile.number" @input="input" type="text" placeholder="请输入手机号" autocomplete="off" maxlength="11" />
+          <i class="icon-2" style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
         </div>
         <div v-if="type=='email'" class="edit-box email">
           <input @blur="blur" @focus="focus" v-model="params.email.number" type="text" autocomplete="off" placeholder="请输入邮箱" />
+          <i class="icon-2" style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
         </div>
         <div class="edit-box item">
           <input v-model="params.verification.number" @blur="blur" @focus="focus" class="center" type="text" autocomplete="off" placeholder="请输入验证码" />
@@ -171,10 +175,10 @@ const check = (number, type, ac) => {
   }
   switch (type) {
     case 'mobile':
-      if (ac == '+86') {
+      if (ac === '86') {
         return /^1[345789]\d{9}$/.test(number)
       }
-      if (ac == '+1'){
+      if (ac === '1'){
         return /^[2-9]\d{2}[2-9](?!11)\d{6}$/.test(number)
       }
       return false;
@@ -189,7 +193,7 @@ const check = (number, type, ac) => {
 let userinfoIsRemember = !!cookie.get('userinfo');
 let userinfo = cookie.get('userinfo') && JSON.parse(cookie.get('userinfo')) || {
   area: {
-    code: '+86',
+    code: '86',
     name: '中国'
   },
   mobile: {
@@ -464,6 +468,7 @@ export default {
             default:
               throw new Error('未知的type');
           }
+          // console.log("pass");
           vm.isRegistered = vm.visible.pass = false;
           vm.api.getRegisterState(param).then(res => {
             vm.isRegistered = !!res.uid; //该账号有没有被注册过
@@ -508,10 +513,10 @@ export default {
       let vm = this;
       let params = {platkey: this.platkey,businessId: "",ticket: ""};
       //quick:快速登录注册   set_password:设置密码   reset:忘记密码
-      if (codetype == 'quick' || codetype == 'set_password') {Object.assign(params, {codetype,param: 'FzmRandom4'});}
-      if (codetype == 'reset') {Object.assign(params, {codetype: 'reset_password',param: 'FzmDataTime|FzmRandom4'});}
+      if (codetype === 'quick' || codetype === 'set_password') {Object.assign(params, {codetype,param: 'FzmRandom4'});}
+      if (codetype === 'reset') {Object.assign(params, {codetype: 'reset_password',param: 'FzmDataTime|FzmRandom4'});}
       switch(vm.type){
-        case 'mobile':Object.assign(params, {area: vm.params.area.code.slice(1),mobile: vm.params.mobile.number});break;
+        case 'mobile':Object.assign(params, {area: vm.params.area.code,mobile: vm.params.mobile.number});break;
         case 'email':Object.assign(params, {email: vm.params.email.number});break;
       }
       type || (type = vm.type === 'mobile' ? 'sms' : 'email');
@@ -531,8 +536,11 @@ export default {
     step(number, type, login, mobiletype,callback) {
       let vm = this;
       if(number === 0 ){
-        vm.params[vm.type].number = "";
+        // vm.params[vm.type].number = "";
         number = 1;
+      }
+      if(number === 5){
+        vm.params[vm.type].password = "";
       }
       debounce && clearTimeout(debounce);
       countdown && clearTimeout(countdown);
@@ -540,10 +548,20 @@ export default {
       vm.params.verification.seconds = vm.maxSeconds;
       vm.params.verification.number = "";
       number && (vm.visible.step = number);
-      type && (vm.type != type) && (vm.type = type) && (vm.params[type].number = vm.userinfoIsRemember && userinfo[type].number || '');
+      type && (vm.type != type) && (vm.type = type) && (vm.params[type].number = vm.params[type].number || vm.userinfoIsRemember && userinfo[type].number || '');
       login && (vm.visible.login = login);
       mobiletype && (vm.params.mobile.type = mobiletype);
       (typeof callback === 'function') && callback.call(vm);
+      if(number === 1){
+        vm.$nextTick(function(){
+          vm.input();
+        })
+      }
+      if(number === 3){
+        vm.$nextTick(function(){
+          vm.$refs.step3input && vm.$refs.step3input.focus();
+        })
+      }
     },
     setPassword() {
       let vm = this;
@@ -564,7 +582,7 @@ export default {
       if (vm.type === 'mobile') {
         Object.assign(params, {
           type: 'sms',
-          area: vm.params.area.code.slice(1),
+          area: vm.params.area.code,
           mobile: vm.params.mobile.number,
         });
       }
@@ -600,7 +618,7 @@ export default {
         Object.assign(params, {
           type: 'sms',
           mobile: vm.params.mobile.number,
-          area: vm.params.area.code.slice(1)
+          area: vm.params.area.code
         });
       } else if (vm.type === 'email') {
         Object.assign(params, {
@@ -676,7 +694,7 @@ export default {
       if (vm.type === 'mobile') {
         Object.assign(params, {
           type: 'sms',
-          area: vm.params.area.code.slice(1),
+          area: vm.params.area.code,
           mobile: vm.params.mobile.number,
         });
       }
@@ -726,7 +744,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 999;
+    z-index: 2000;
     div,
     em,
     input,
@@ -759,6 +777,36 @@ export default {
           color:transparent;
         }
     }
+    @for $i from 1 to 5{
+      .icon-#{$i}{
+        background:url(./../../../i/#{$i}.png) center no-repeat 
+      }
+    }
+    .icon-1{
+      float:left;
+      width:14px;
+      height:14px;
+      line-height:16px;
+      border-radius:4px;
+      margin:2px 2px 0 0;
+      overflow:hidden;
+    }
+    .icon-3{
+      float:left;
+      width:14px;
+      height:14px;
+      line-height:16px;
+      border-radius:4px;
+      margin:2px 2px 0 0;
+      overflow:hidden;
+    }
+    .icon-2 {
+        width: 13px;
+        height: 40px;
+        cursor:pointer;
+        line-height: 40px;
+        display: inline-block;
+    }
     .full {
         width: 100%;
     }
@@ -788,6 +836,7 @@ export default {
             flex: 1;
             justify-content: center;
             cursor: pointer;
+            margin: 0 40px;
         }
         .line {
             position: absolute;
@@ -847,7 +896,7 @@ export default {
         cursor: pointer;
     }
     .countdown {
-        color: #808080;
+        color: #333333;
         span {
             display: inline-block;
             width: 20px;
@@ -899,10 +948,12 @@ export default {
         background-color: #FEF7F7;
         border-radius: 4px;
         height: 40px;
+        color:#333333;
         &.focus {
             box-shadow: 0 0 9px rgba(206,24,29,.2);
             background-color: #FFFFFF;
             border-radius: 4px;
+            color:#808080;
         }
     }
     .step3{
@@ -912,19 +963,12 @@ export default {
         top:50px;
         cursor:pointer;
         color:#828282;
-        .remember-check{
-          float:left;
-          width:14px;
-          height:14px;
-          line-height:16px;
-          border-radius:4px;
-          margin:2px 2px 0 0;
-          background-color:#F7E1E1;
-          overflow:hidden;
-        }
       }
       .remember-item{
         left:0;
+        &.active{
+          color:#CE181D;
+        }
       }
       .forget-item{
         right:0px;
@@ -932,7 +976,7 @@ export default {
     }
     .mobile {
         input {
-            width: 220px;
+            width: 180px;
         }
         .code {
             height: 40px;
@@ -940,12 +984,9 @@ export default {
             padding-left: 15px;
             width: 46px;
             display: inline-block;
-        }
-        .icon-tog {
-            width: 13px;
-            height: 40px;
-            line-height: 40px;
-            display: inline-block;
+            color:inherit;
+            font-size:16px;
+            font-style: normal;
         }
         .world {
             position: relative;
@@ -979,7 +1020,7 @@ export default {
     }
     .email {
         input {
-            width: 100%;
+            width: 250px;
             text-align: center;
         }
     }
@@ -1006,10 +1047,11 @@ export default {
                     position: relative;
                     width: 290px;
                     overflow: visible;
-                    color: #808080;
+                    color: inherit;
                 }
                 input {
-                    right: 0;
+                    right: 40px;
+                    text-align: center;
                 }
             }
             .step2 {
@@ -1020,7 +1062,7 @@ export default {
                     border-radius: 4px;
                     background-color: #FFFFFF;
                     overflow: visible;
-                    color: #808080;
+                    color:inherit;
                     input {
                         left: 0;
                         width: 190px;
@@ -1046,7 +1088,7 @@ export default {
                     border-radius: 4px;
                     background-color: #FFFFFF;
                     overflow: visible;
-                    color: #808080;
+                    color:inherit;
                     input {
                         position: absolute;
                         left: 0;
