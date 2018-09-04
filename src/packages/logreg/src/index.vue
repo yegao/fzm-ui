@@ -287,6 +287,14 @@ function createScriptForLoginByPassword(res, vm, params) {
       capInit(TCaptcha, capOption);
     }, 300);
   }
+  else{
+    vm.api.login(params).then(res => {
+      notyf.confirm('登录成功!');
+      vm.visible.context = false;
+      vm.step(0, 'mobile', null, 'sms',false);
+      vm.callback && vm.callback('login', res);
+    });
+  }
 }
 
 //获取光标位置
@@ -329,7 +337,9 @@ export default {
     open: Boolean,
     icon: String,
     maxsec: Number,
-    sty: String
+    sty: String,
+    invite: String,
+    context:Function
   },
   data() {
     // let logo = '../../../' + png.logo.src;
@@ -502,7 +512,7 @@ export default {
       let vm = this;
       if (vm.params.verification.seconds) {
         vm.params.verification.seconds--;
-        countdown = setTimeout(vm.countdown, 300);
+        countdown = setTimeout(vm.countdown, 1000);
         //本来这里可以直接传递一个max参数,但是iE9或者更早版本的浏览器不支持,所以这里吧max作为全局变量
       } else {
         vm.params.verification.enable = true;
@@ -644,11 +654,18 @@ export default {
             vm.callback && vm.callback('login', res);
           })
         } else {
+          params = this.invite && {...params, invite_code:this.invite} || params
           vm.api.register(params).then(res => {
             notyf.confirm("注册成功!");
             vm.isRegistered = true;
             vm.visible.context = false;
-            vm.callback && vm.callback('register', res);
+            // vm.callback && vm.callback('register', res);
+            vm.api.login(params).then(res => {
+              notyf.confirm("登录成功!");
+              vm.visible.context = false;
+              vm.step(0, 'mobile', null,null, false);
+              vm.callback && vm.callback('login', res);
+            })
           });
         }
       } else {
@@ -710,6 +727,10 @@ export default {
         this.submit();
       });
     }
+  },
+  created(){
+    //将当前组件的上下文绑定到外面去(推荐绑定到vuex里面的store.state.lr.context中)
+    this.context && this.context(this);
   }
 };
 </script>
@@ -772,7 +793,8 @@ export default {
         height: 40px;
         line-height: 40px;
         font-size: 16px;
-        padding-left: 6px;
+        // padding-left: 6px;
+        text-align:center;
         &.transparent{
           color:transparent;
         }
