@@ -11,7 +11,7 @@ if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue);
 }
 
-export default {version: '1.2.5', install}
+export default {version: '1.2.7', install}
 
 // module.exports = {
 //   version: '1.0.1',
