@@ -17,7 +17,7 @@ Vue.use(FzmUI);
 `open`: Boolean `必须` 是否显示登录注册弹框,一般情况下这个属性是一个sync属性，所以请在open后面加上.sync  
 `icon`: String `非必须` 图标地址,不传递则没有图标,传入'default'则为默认图标(目前是找币的图标，以后会修改成33.cn的logo)  
 `maxsec`: Number `非必须` 验证码倒计时最大秒数,不传则为60秒   
-`sty`: String `非必须` 风格 可选值'absolute' 'relative' 'auto',不填为fixed风格,并wrap宽高均为100%,设置为'auto'则宽高均为auto;
+`sty`: String `非必须` 风格 可选值'absolute' 'relative' 'auto',不填为fixed风格,并wrap宽高均为100%,设置为'auto'则宽高均为auto
 `invite` String `非必须` 邀请码
 `context` Function `非必须` 向登录注册传递的上下文钩子 
 `mode` String `非必须` 默认是'win'，如需使用手机版，传入'mb'
