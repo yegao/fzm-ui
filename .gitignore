@@ -2,5 +2,6 @@
 /build/
 /config/
 /src
+.idea/
 .postcssrc.js
 .babelrc

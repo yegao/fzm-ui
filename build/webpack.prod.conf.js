@@ -8,7 +8,8 @@ const baseWebpackConfig = require('./webpack.base.conf')
 // const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 // const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
@@ -76,6 +77,11 @@ const webpackConfig = merge(baseWebpackConfig, {
   //   }
   // },
   plugins: [
+    new CleanWebpackPlugin('dist', {
+      root: path.resolve(__dirname, '../'),
+      verbose: true,
+      dry: false
+    }),
     new VueLoaderPlugin(),
     // new MiniCssExtractPlugin({
     //   filename: 'fzm-ui.min.css', chunkFilename: 'fzm-ui.[contenthash:12].css'

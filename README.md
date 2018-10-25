@@ -20,7 +20,8 @@ Vue.use(FzmUI);
 `sty`: String `非必须` 风格 可选值'absolute' 'relative' 'auto',不填为fixed风格,并wrap宽高均为100%,设置为'auto'则宽高均为auto;
 `invite` String `非必须` 邀请码
 `context` Function `非必须` 向登录注册传递的上下文钩子 
-### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg  
+`mode` String `非必须` 默认是'win'，如需使用手机版，传入'mb'
+### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg
 ```vue
 <template lang="html">
   <div>

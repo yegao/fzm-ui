@@ -1,4 +1,5 @@
 import Logreg from './packages/logreg/index.js';
+import './assets/c/index.css'
 const components = [Logreg];
 
 let install = function(Vue) {
