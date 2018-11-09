@@ -209,7 +209,7 @@
         }
         return false;
       case 'email':
-        return /^\w+@\w+\.[a-zA-Z]{2,6}$/.test(number);
+        return /^([a-zA-Z0-9._-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/.test(number);
       case 'verification':
         return /^\d{4,6}$/.test(number);
       case 'password':
@@ -275,7 +275,7 @@
           pos: 'fixed'
         };
         capInit(TCaptcha, capOption);
-      }, 300);
+      }, 2000);
     }
     else {
       vm.params.verification.enable = false;
@@ -312,7 +312,7 @@
           pos: 'fixed'
         };
         capInit(TCaptcha, capOption);
-      }, 300);
+      }, 1500);
     }
     else {
       vm.api.login(params).then(res => {
@@ -332,7 +332,7 @@
       selectRang.moveStart('character', -e.value.length);
       return selectRange.text.length;
     }
-    else if (e.selectionStart || e.selectionStart == '0') {
+    else if (e && (e.selectionStart || e.selectionStart == '0')) {
       return e.selectionStart;
     }
   }
@@ -340,11 +340,11 @@
   function setCursorPosition(e, pos) {
     positioning = true;
     this.$nextTick(function () {
-      if (e.setSelectionRange) {
+      if (e && e.setSelectionRange) {
         e.focus();
         e.setSelectionRange(pos, pos);
       }
-      else if (e.createTextRange) {
+      else if (e && e.createTextRange) {
         let range = e.createTextRange();
         range.collapse(true);
         range.moveEnd('character', pos);
@@ -607,7 +607,7 @@
         vm.params.verification.number = "";
         number && (vm.visible.step = number);
         type && (vm.type != type) && (vm.type = type) && (vm.params[type].number = vm.params[type].number || vm.userinfoIsRemember && userinfo[type].number || '');
-        login && (vm.visible.login = login);
+        login && (vm.visible.login = login) || (vm.visible.login = 'verification');
         mobiletype && (vm.params.mobile.type = mobiletype);
         (typeof callback === 'function') && callback.call(vm);
         if (number === 1) {
@@ -652,11 +652,16 @@
         }
         vm.api.setPassword(params).then(res => {
           this.notify.success('设置密码成功!');
-          vm.submit()
+          vm.params[vm.type].password = "";
+          vm.visible.pass = true;
+          vm.step(3, null, 'password');
         });
       },
       submit() {
         let vm = this;
+        if(!(vm.visibility && (vm.visible.step==2 || vm.visible.step == 3))){
+          return;
+        }
         let params = {
           ticket: "",
           businessId: "",
@@ -772,13 +777,13 @@
         this.api.resetPassword(params).then(res => {
           this.notify.success('密码重新设置成功!');
           vm.step(3, null, 'password');
-          this.submit();
         });
       }
     },
     created() {
       //将当前组件的上下文绑定到外面去(推荐绑定到vuex里面的store.state.lr.context中)
       this.context && this.context(this);
+      this.chinaMobile = this.params.mobile.number;
     }
   };
 </script>
