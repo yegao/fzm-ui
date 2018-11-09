@@ -187,14 +187,10 @@
   </div>
 </template>
 <script>
-  import './../../notyf/index.css';
-  import Notyf from './../../notyf/index.js';
   import world from './../../../json/world.json'
-  // import png from './../../../json/png.json'
   import config from './../../../json/logreg.json'
   import cookie from './../../../utils/cookie.js'
 
-  var notyf = new Notyf();
   let position = 0;
   let positioning = false;//临近空格操作时候的光标
   let logo = require('../../../assets/i/logo.png');
@@ -303,7 +299,7 @@
                 ticket: res.ticket
               });
               vm.api.login(params).then(res => {
-                notyf.confirm('登录成功!');
+                vm.notify.success('登录成功!');
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, 'sms', false);
                 vm.callback && vm.callback('login', res);
@@ -320,7 +316,7 @@
     }
     else {
       vm.api.login(params).then(res => {
-        notyf.confirm('登录成功!');
+        vm.notify.success('登录成功!');
         vm.visible.context = false;
         vm.step(0, 'mobile', null, 'sms', false);
         vm.callback && vm.callback('login', res);
@@ -374,7 +370,8 @@
       mode: {
         type: String,
         default: 'win'
-      }
+      },
+      notify: Object
     },
     data() {
       // let logo = '../../../' + png.logo.src;
@@ -427,7 +424,7 @@
           return;
         }
         if (!/^[\s\d]{0,13}$/.test(n)) {
-          notyf.alert("请填写正确的中国手机号码!")
+          this.notify.warn('请填写正确的中国手机号码!');
           return;
         }
         if (positioning) {
@@ -628,12 +625,12 @@
         let vm = this;
         //检查验证码
         if (!check(vm.params.verification.number, 'verification')) {
-          notyf.alert("请填写正确的验证码!");
+          this.notify.warn('请填写正确的验证码!');
           return false;
         }
         //检查密码
         if (!check(vm.params[vm.type].password, 'password')) {
-          notyf.alert("密码字符个数至少为6位!")
+          this.notify.warn('密码字符个数至少为6位!');
           return false;
         }
         let params = {
@@ -654,7 +651,7 @@
           });
         }
         vm.api.setPassword(params).then(res => {
-          notyf.confirm("设置密码成功!");
+          this.notify.success('设置密码成功!');
           vm.submit()
         });
       },
@@ -668,10 +665,10 @@
         // 检查手机号和邮箱
         if (!check(vm.params[vm.type].number, vm.type, vm.params.area.code)) {
           if (vm.type === 'mobile') {
-            notyf.alert("请填写正确的手机号码!")
+            this.notify.warn('请填写正确的手机号码!');
           }
           else if (vm.type === 'email') {
-            notyf.alert("请填写正确的邮箱!")
+            this.notify.warn('请填写正确的邮箱!');
           }
           return false;
         }
@@ -690,7 +687,7 @@
         if (vm.visible.step == 2) {
           //检查验证码
           if (!check(vm.params.verification.number, 'verification')) {
-            notyf.alert("请填写正确的验证码!");
+            this.notify.warn('请填写正确的验证码!');
             return false;
           }
           Object.assign(params, {
@@ -699,7 +696,7 @@
           });
           if (vm.isRegistered) {
             vm.api.login(params).then(res => {
-              notyf.confirm("登录成功!");
+              this.notify.success('登录成功!');
               vm.visible.context = false;
               vm.step(0, 'mobile', null, null, false);
               vm.callback && vm.callback('login', res);
@@ -707,12 +704,12 @@
           } else {
             params = this.invite && {...params, invite_code: this.invite} || params
             vm.api.register(params).then(res => {
-              notyf.confirm("注册成功!");
+              this.notify.success('注册成功!');
               vm.isRegistered = true;
               vm.visible.context = false;
               // vm.callback && vm.callback('register', res);
               vm.api.login(params).then(res => {
-                notyf.confirm("登录成功!");
+                this.notify.success('登录成功!');
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, null, false);
                 vm.callback && vm.callback('login', res);
@@ -722,7 +719,7 @@
         } else {
           //检查密码
           if (!check(vm.params[vm.type].password, 'password')) {
-            notyf.alert("密码字符个数至少为6位!")
+            this.notify.warn('密码字符个数至少为6位!');
             return false;
           }
           Object.assign(params, {
@@ -752,7 +749,7 @@
         let vm = this;
         //检查密码
         if (!check(vm.params[vm.type].password, 'password')) {
-          notyf.alert("密码字符个数至少为6位!")
+          this.notify.warn('密码字符个数至少为6位!');
           return false;
         }
         let params = {
@@ -773,7 +770,7 @@
           });
         }
         this.api.resetPassword(params).then(res => {
-          notyf.confirm(`密码重新设置成功!`);
+          this.notify.success('密码重新设置成功!');
           vm.step(3, null, 'password');
           this.submit();
         });

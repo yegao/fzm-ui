@@ -11,17 +11,23 @@ import FzmUI from "fzm-ui"
 Vue.use(FzmUI);
 ```
 ### FzmLogReg组件需要传递以下个参数  
-`api`: Object `必须` 存放所有登录注册相关的http接口方法的对象 详细请查看下面  
-`platkey`: String `必须` 项目标记  
-`callback`: Function `必须` 登录和注册成功之后的回调方法 详细请查看下面  
-`open`: Boolean `必须` 是否显示登录注册弹框,一般情况下这个属性是一个sync属性，所以请在open后面加上.sync  
-`icon`: String `非必须` 图标地址,不传递则没有图标,传入'default'则为默认图标(目前是找币的图标，以后会修改成33.cn的logo)  
-`maxsec`: Number `非必须` 验证码倒计时最大秒数,不传则为60秒   
-`sty`: String `非必须` 风格 可选值'absolute' 'relative' 'auto',不填为fixed风格,并wrap宽高均为100%,设置为'auto'则宽高均为auto
-`invite` String `非必须` 邀请码
-`context` Function `非必须` 向登录注册传递的上下文钩子 
-`mode` String `非必须` 默认是'win'，如需使用手机版，传入'mb'
+
+| 参数        | 说明    |  类型  |  是否必须  |
+| :--------: | :-----   | :----: | :----: |
+| api        |   存放所有登录注册相关的http接口方法的对象 详细请查看下面     |   Object    |   必须    |
+| platkey    |  项目标记     |   String    |   必须    |
+| callback   |   登录和注册成功之后的回调方法 详细请查看下面    |   Function    |   必须    |
+| open       |   是否显示登录注册弹框,一般情况下这个属性是一个sync属性，所以请在open后面加上.sync    |   Boolean    |   必须    |
+| icon       |   图标地址,不传递则没有图标,传入'default'则为默认图标(目前是找币的图标，以后会修改成33.cn的logo)    |   String    |   非必须    |
+| maxsec     |   验证码倒计时最大秒数,不传则为60秒    |   Number    |   非必须    |
+| sty        |   风格 可选值'absolute' 'relative' 'auto',不填为fixed风格,并wrap宽高均为100%,设置为'auto'则宽高均为auto    |   String    |   非必须    |
+| invite     |   邀请码    |   String    |   非必须    |
+| context    |   向登录注册传递的上下文钩子    |   Function    |   非必须    |
+| mode       |   PC模式还是手机模式 默认是'win'，如需使用手机版，传入'mb'    |   String    |   非必须    |
+| notify     |   提示框回调 在此对象中定义success、warn两个方法，方法接收参数message    |   Object    |   必须    |
+
 ### 假如需要在 a.vue 中使用fzm-ui中的登录注册组件FzmLogReg
+
 ```vue
 <template lang="html">
   <div>
@@ -152,4 +158,4 @@ export default {
 - [x] 记住密码在切换手机和邮箱的时候,如果实现已经有密码了,不会执行判断是否注册的步骤    
 - [x] ~~有时候腾讯云的验证不出现~~  
 - [x] 多次发送验证码之后,进行注册，后台以第一次发送的验证码为正确的验证码,而不是以最后一次发送的验证码为验证码  
-- [x] ~~腾讯云验证码在加载之后虽然进行capDestory操作，但是在html中仍然保留了创建的script(老版本也存在该问题)~~  
+- [x] ~~腾讯云验证码在加载之后虽然进行capDestory操作，但是在html中仍然保留了创建的script(老版本也存在该问题)~~
