@@ -300,6 +300,8 @@
               });
               vm.api.login(params).then(res => {
                 vm.notify.success('登录成功!');
+                vm.resetInfo()
+                console.log(vm.chinaMobile)
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, 'sms', false);
                 vm.callback && vm.callback('login', res);
@@ -317,6 +319,7 @@
     else {
       vm.api.login(params).then(res => {
         vm.notify.success('登录成功!');
+        vm.resetInfo()
         vm.visible.context = false;
         vm.step(0, 'mobile', null, 'sms', false);
         vm.callback && vm.callback('login', res);
@@ -702,6 +705,7 @@
           if (vm.isRegistered) {
             vm.api.login(params).then(res => {
               this.notify.success('登录成功!');
+              this.resetInfo()
               vm.visible.context = false;
               vm.step(0, 'mobile', null, null, false);
               vm.callback && vm.callback('login', res);
@@ -715,6 +719,7 @@
               // vm.callback && vm.callback('register', res);
               vm.api.login(params).then(res => {
                 this.notify.success('登录成功!');
+                this.resetInfo()
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, null, false);
                 vm.callback && vm.callback('login', res);
@@ -778,6 +783,18 @@
           this.notify.success('密码重新设置成功!');
           vm.step(3, null, 'password');
         });
+      },
+      resetInfo(){
+        this.chinaMobile=''
+        this.params={
+          ...userinfo,
+          verification: {
+            number: "",
+            enable: false,
+            seconds: this.maxsec || 60
+          }
+        }
+
       }
     },
     created() {
