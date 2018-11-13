@@ -578,17 +578,17 @@
         switch (type) {
           case 'sms':
             vm.api.getCodeBySms(params).then(res => {
-              createScript(res, vm, params)
+              createScript(res.data, vm, params)
             });
             break;
           case 'voice':
             vm.api.getCodeByVoice(params).then(res => {
-              createScript(res, vm, params)
+              createScript(res.data, vm, params)
             });
             break;
           case 'email':
             vm.api.getCodeByEmail(params).then(res => {
-              createScript(res, vm, params)
+              createScript(res.data, vm, params)
             });
             break;
         }
