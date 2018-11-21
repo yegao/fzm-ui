@@ -49,7 +49,7 @@
                   <span class="countdown" v-else>还剩<span>{{params.verification.seconds}}</span>s</span>
                 </div>
                 <div class="note" v-if="!params.verification.enable">收不到短信试一试<span
-                        @click="step(2,'mobile','verification','voice',function(){this.getVerification('voice','quick')})">语言认证</span>
+                        @click="step(2,'mobile','verification','voice',function(){this.getVerification('voice','quick')})">语音认证</span>
                 </div>
               </div>
               <!--语音-->
@@ -301,7 +301,6 @@
               vm.api.login(params).then(res => {
                 vm.notify.success('登录成功!');
                 vm.resetInfo()
-                console.log(vm.chinaMobile)
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, 'sms', false);
                 vm.callback && vm.callback('login', res);
@@ -564,7 +563,7 @@
           Object.assign(params, {codetype, param: 'FzmRandom4'});
         }
         if (codetype === 'reset') {
-          Object.assign(params, {codetype: 'reset_password', param: 'FzmDataTime|FzmRandom4'});
+          Object.assign(params, {codetype: 'reset_password', param: 'FzmDateTime|FzmRandom4'});
         }
         switch (vm.type) {
           case 'mobile':
