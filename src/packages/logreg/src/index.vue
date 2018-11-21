@@ -305,6 +305,8 @@
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, 'sms', false);
                 vm.callback && vm.callback('login', res);
+              }).catch(err => {
+                vm.notify.error(err.message);
               });
             }
             capDestroy();
@@ -323,6 +325,8 @@
         vm.visible.context = false;
         vm.step(0, 'mobile', null, 'sms', false);
         vm.callback && vm.callback('login', res);
+      }).catch(err => {
+        vm.notify.error(err.message);
       });
     }
   }
@@ -658,6 +662,8 @@
           vm.params[vm.type].password = "";
           vm.visible.pass = true;
           vm.step(3, null, 'password');
+        }).catch(err => {
+          vm.notify.error(err.message);
         });
       },
       submit() {
@@ -709,6 +715,8 @@
               vm.visible.context = false;
               vm.step(0, 'mobile', null, null, false);
               vm.callback && vm.callback('login', res);
+            }).catch(err => {
+              vm.notify.error(err.message);
             })
           } else {
             params = this.invite && {...params, invite_code: this.invite} || params
@@ -723,7 +731,11 @@
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, null, false);
                 vm.callback && vm.callback('login', res);
+              }).catch(err => {
+                vm.notify.error(err.message);
               })
+            }).catch(err => {
+              vm.notify.error(err.message);
             });
           }
         } else {
@@ -782,6 +794,8 @@
         this.api.resetPassword(params).then(res => {
           this.notify.success('密码重新设置成功!');
           vm.step(3, null, 'password');
+        }).catch(err => {
+          vm.notify.error(err.message);
         });
       },
       resetInfo(){
