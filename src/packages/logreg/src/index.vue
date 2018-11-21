@@ -111,7 +111,7 @@
         <div class="tabs">
           <div class="tab">
             <span>设置密码</span>
-            <i class="line" style="left:164px;"></i>
+            <i class="line" style="left:134px;"></i>
           </div>
         </div>
         <div class="tabc">
@@ -621,6 +621,9 @@
           vm.$nextTick(function () {
             vm.$refs.step3input && vm.$refs.step3input.focus();
           })
+        }
+        if (number===4) {
+          this.getVerification(null,'set_password')
         }
       },
       setPassword() {
@@ -1158,6 +1161,10 @@
             }
           }
         }
+      }
+      .step4{
+        padding-left: 30px;
+        padding-right: 30px;
       }
       .step5{
         .tabc{
