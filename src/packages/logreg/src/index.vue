@@ -808,22 +808,35 @@
         });
       },
       resetInfo(){
-        this.chinaMobile=''
+        let userinfo1 = cookie.get('userinfo') && JSON.parse(cookie.get('userinfo')) || {
+          area: {
+            code: '86',
+            name: '中国'
+          },
+          mobile: {
+            type: 'sms',
+            number: "",
+            password: ""
+          },
+          email: {
+            number: "",
+            password: ""
+          }
+        };
         this.params={
-          ...userinfo,
+          ...userinfo1,
           verification: {
             number: "",
             enable: false,
             seconds: this.maxsec || 60
           }
-        }
-
+        };
+        this.chinaMobile = this.params.mobile.number;
       }
     },
     created() {
       //将当前组件的上下文绑定到外面去(推荐绑定到vuex里面的store.state.lr.context中)
       this.context && this.context(this);
-      this.chinaMobile = this.params.mobile.number;
     }
   };
 </script>
