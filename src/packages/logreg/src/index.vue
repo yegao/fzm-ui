@@ -377,7 +377,14 @@
         type: String,
         default: 'win'
       },
-      notify: Object
+      notify: {
+        type: Object,
+        default: {
+          success(){},
+          warn(){},
+          error(){}
+        }
+      }
     },
     data() {
       // let logo = '../../../' + png.logo.src;
