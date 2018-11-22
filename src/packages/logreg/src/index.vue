@@ -79,7 +79,7 @@
             <div v-if="visible.login=='password' && visible.pass" class="edit-box item">
               <input v-model="params[type].password" @blur="blur" @focus="focus" ref="step3input" type="password"
                      autocomplete="new-password" placeholder="请输入密码" class="full center" v-show="inputShow"/>
-              <input type="text" v-model="params[type].password" @blur="blur" @focus="focus"
+              <input type="text" v-model="params[type].password" @blur="blur" @focus="focus" @keyup.enter="submit"
                      autocomplete="new-password" placeholder="请输入密码" class="full center" v-show="!inputShow"/>
               <i class="fzm-icons fzm-icon-yanjing" @click="inputShow=!inputShow" :class="{'active':!inputShow}"></i>
             </div>
@@ -300,7 +300,13 @@
               });
               vm.api.login(params).then(res => {
                 vm.notify.success('登录成功!');
-                vm.resetInfo()
+                //如果选择了记住密码，则存储userinfo
+                if(vm.userinfoIsRemember){
+                  let {area, mobile, email} = vm.params;
+                  cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
+                }
+                //登录成功清空表单信息
+                vm.resetInfo();
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, 'sms', false);
                 vm.callback && vm.callback('login', res);
@@ -320,7 +326,13 @@
     else {
       vm.api.login(params).then(res => {
         vm.notify.success('登录成功!');
-        vm.resetInfo()
+        //如果选择了记住密码，则存储userinfo
+        if(vm.userinfoIsRemember){
+          let {area, mobile, email} = vm.params;
+          cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
+        }
+        //登录成功清空表单信息
+        vm.resetInfo();
         vm.visible.context = false;
         vm.step(0, 'mobile', null, 'sms', false);
         vm.callback && vm.callback('login', res);
@@ -720,7 +732,13 @@
           if (vm.isRegistered) {
             vm.api.login(params).then(res => {
               this.notify.success('登录成功!');
-              this.resetInfo()
+              //如果选择了记住密码，则存储userinfo
+              if(vm.userinfoIsRemember){
+                let {area, mobile, email} = vm.params;
+                cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
+              }
+              //登录成功清空表单信息
+              vm.resetInfo();
               vm.visible.context = false;
               vm.step(0, 'mobile', null, null, false);
               vm.callback && vm.callback('login', res);
@@ -736,7 +754,13 @@
               // vm.callback && vm.callback('register', res);
               vm.api.login(params).then(res => {
                 this.notify.success('登录成功!');
-                this.resetInfo()
+                //如果选择了记住密码，则存储userinfo
+                if(vm.userinfoIsRemember){
+                  let {area, mobile, email} = vm.params;
+                  cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
+                }
+                //登录成功清空表单信息
+                vm.resetInfo();
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, null, false);
                 vm.callback && vm.callback('login', res);
@@ -771,8 +795,7 @@
           cookie.remove('userinfo');
           this.userinfoIsRemember = false;
         } else {
-          let {area, mobile, email} = this.params;
-          cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
+          //修改记住密码flag为true，但真正记住密码只在登录成功后才记录
           this.userinfoIsRemember = true;
         }
       },
