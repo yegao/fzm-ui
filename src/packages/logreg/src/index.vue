@@ -254,16 +254,22 @@
                 case 'sms':
                   vm.api.getCodeBySms(params).then(res => {
                     vm.params.verification.enable = false;
+                  }).catch(err => {
+                    vm.notify.error(err.message);
                   });
                   break;
                 case 'voice':
                   vm.api.getCodeByVoice(params).then(res => {
                     vm.params.verification.enable = false;
+                  }).catch(err => {
+                    vm.notify.error(err.message);
                   });
                   break;
                 case 'email':
                   vm.api.getCodeByEmail(params).then(res => {
                     vm.params.verification.enable = false;
+                  }).catch(err => {
+                    vm.notify.error(err.message);
                   });
                   break;
               }
@@ -860,6 +866,7 @@
     created() {
       //将当前组件的上下文绑定到外面去(推荐绑定到vuex里面的store.state.lr.context中)
       this.context && this.context(this);
+      this.chinaMobile = sessionStorage.getItem('setParam')&&JSON.parse(sessionStorage.getItem('setParam')).mobile || '';
     }
   };
 </script>
