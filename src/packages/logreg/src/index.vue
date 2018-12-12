@@ -1094,6 +1094,7 @@
       }
       width: 350px;
       max-height: 80%;
+      margin: 0;
       padding: 30px 0 0;
       background-color: #FFFFFF;
       border-radius: 4px;
@@ -1403,7 +1404,7 @@
             }
             .mobile .note {
               position: relative;
-              color: #888888;
+              color: #c8d3de;
               font-size: 14px;
               height: 40px;
               line-height: 40px;
@@ -1417,9 +1418,8 @@
             }
             .mobile .voice {
               position: relative;
-              width: 290px;
+              width: 100%;
               border-radius: 4px;
-              background-color: #FFFFFF;
               overflow: visible;
               color: inherit;
               input {
@@ -1429,6 +1429,7 @@
                 width: 100%;
               }
             }
+
           }
           .step3 {
             height: 90px;
@@ -1470,12 +1471,20 @@
       }
       .step4{
         .tabc{
+          .edit-box{
+            .btn-verification{
+              position: static;
+            }
+          }
           .control{
             .back{
+              flex: 1;
+              margin-right: 20px;
               color: #c8d3de;
               border: 1px solid #c8d3de;
             }
             .ok{
+              flex: 1;
               color: #262b31;
               background-color: #c8d3de;
             }
