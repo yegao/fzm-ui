@@ -7,15 +7,15 @@
         <div class="tabs">
           <span class="tab" @click="step(0,'mobile',null,'sms')" :class="{'active':type==='mobile'}">手机</span>
           <span class="tab" @click="step(0,'email')" :class="{'active':type==='email'}">邮箱</span>
-          <i class="line" :style="'left:'+config[type].line.left+'px;'"></i>
+          <i class="line" :style="'left:'+config[type].line.left+'px;'" v-if="mode==='win'"></i>
         </div>
         <div class="tabc">
           <div class="step1">
             <div v-if="type=='mobile'" class="mobile edit-box item">
-            <span @click="visible.world = !visible.world" @click.stop>
-                <em class="code">+{{params.area.code}}</em>
-                <i class="icon-2 fzm-icons fzm-icon-xiala" :class="{'icon-act':visible.world}"></i>
-            </span>
+              <span @click="visible.world = !visible.world" @click.stop>
+                  <em class="code">+{{params.area.code}}</em>
+                  <i class="icon-2 fzm-icons fzm-icon-xiala" :class="{'icon-act':visible.world}"></i>
+              </span>
               <ul v-if="visible.world" class="world">
                 <li class="country" v-for="(item,index) in world" :key="index" @click="chooseArea(item)" @click.stop>
                   <span><em>{{item.code}}</em> {{item.ch_name}}</span>
@@ -25,14 +25,26 @@
                      type="text" placeholder="请输入手机号" autocomplete="off" maxlength="13"/>
               <input v-else @blur="blur" @focus="focus" v-model="params.mobile.number" @input="input" ref="step1mobile"
                      type="text" placeholder="请输入手机号" autocomplete="off" maxlength="11"/>
-              <i class="icon-2 mb-none fzm-icons fzm-icon-xiala"
-                 style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
+              <i class="icon-2 fzm-icons fzm-icon-xiala"
+                 style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"
+                 :class="{'icon-act':visible.phone}" @click.stop="visible.phone=!visible.phone"></i>
+              <ul class="select phone-select" v-show="visible.phone">
+                <li class="select-item" v-for="item in users.mobile" :key="item.number"
+                    @click.stop="switchMobile(item)">{{item.number}}
+                </li>
+              </ul>
             </div>
             <div v-if="type=='email'" class="email edit-box item">
               <input @blur="blur" @focus="focus" v-model="params.email.number" @input="input" ref="step1email"
                      type="text" autocomplete="off" placeholder="请输入邮箱"/>
-              <i class="icon-2 mb-none fzm-icons fzm-icon-xiala"
-                 style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
+              <i class="icon-2 fzm-icons fzm-icon-xiala"
+                 style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"
+                 :class="{'icon-act':visible.email}" @click.stop="visible.email=!visible.email"></i>
+              <ul class="select email-select" v-show="visible.email">
+                <li class="select-item" v-for="item in users.email" :key="item.number" @click.stop="switchEmail(item)">
+                  {{item.number}}
+                </li>
+              </ul>
             </div>
           </div>
           <!--验证码登录注册-->
@@ -40,27 +52,27 @@
             <!--手机-->
             <div v-if="type=='mobile'" class="mobile">
               <!--短信-->
-              <div v-if="params.mobile.type=='sms' && visible.login=='verification'" class="sms">
+              <div v-if="visible.login=='verification'" class="sms">
                 <div class="edit-box item">
                   <input type="text" @blur="blur" @focus="focus" v-model="params.verification.number" autocomplete="off"
                          placeholder="请输入验证码"/>
                   <span class="btn-verification" v-if="params.verification.enable"
-                        @click="getVerification('sms','quick')">获取验证码</span>
-                  <span class="countdown" v-else>还剩<span>{{params.verification.seconds}}</span>s</span>
+                        @click="step(2,'mobile','verification','sms',function(){this.getVerification('sms','quick')})">获取验证码</span>
+                  <span class="countdown" v-if="!voiceShow&&!params.verification.enable">还剩<span>{{params.verification.seconds}}</span>s</span>
                 </div>
-                <div class="note" v-if="!params.verification.enable">收不到短信试一试<span
-                        @click="step(2,'mobile','verification','voice',function(){this.getVerification('voice','quick')})">语音认证</span>
+                <div class="note"
+                     v-if="voiceShow&&params.verification.enable">
+                  收不到短信?试试
+                  <span
+                          @click="step('','mobile','verification','voice',function(){this.getVerification('voice','quick')})">
+                    语音认证
+                  </span>
                 </div>
-              </div>
-              <!--语音-->
-              <div v-if="params.mobile.type=='voice'" class="voice">
-                <div class="edit-box item">
-                  <input type="text" @blur="blur" @focus="focus" v-model="params.verification.number" autocomplete="off"
-                         placeholder="请输入验证码"/>
+                <div
+                        class="note"
+                        v-if="voiceShow&&!params.verification.enable">
+                  请注意接听语音认证 还剩<span>{{params.verification.seconds}}</span>s
                 </div>
-                <div class="note" v-if="params.verification.enable" @click="getVerification('voice','quick')">获取语音验证码
-                </div>
-                <div class="note" v-else>请注意接听语音认证 还剩<span>{{params.verification.seconds}}</span>s</div>
               </div>
             </div>
             <!--邮箱-->
@@ -124,6 +136,19 @@
                   @click="getVerification(null,'set_password')">获取验证码</span>
             <span v-else class="countdown">还剩<span>{{params.verification.seconds}}</span>s</span>
           </div>
+          <div class="note"
+               v-if="type==='mobile'&&voiceShow&&params.verification.enable">
+            收不到短信?试试
+            <span
+                    @click="step('','mobile','verification','voice',function(){this.getVerification('voice','set_password')})">
+                    语音认证
+                  </span>
+          </div>
+          <div
+                  class="note"
+                  v-if="type==='mobile'&&voiceShow&&!params.verification.enable">
+            请注意接听语音认证 还剩<span>{{params.verification.seconds}}</span>s
+          </div>
           <div class="edit-box item">
             <input v-model="params[type].password" class="full" type="password" @blur="blur" @focus="focus"
                    autocomplete="new-password" placeholder="请设置新密码（6-16个字符）">
@@ -138,15 +163,15 @@
       <!--找回密码-->
       <div v-if="visible.step==5" class="step5">
         <div class="tabs">
-          <span class="tab" @click="step(5,'mobile')">手机找回密码</span>
-          <span class="tab" @click="step(5,'email')">邮箱找回密码</span>
-          <i class="line" :style="'left:'+config[type].line.left+'px;'"></i>
+          <span class="tab" :class="{'active':type==='mobile'}" @click="step(5,'mobile')">手机找回密码</span>
+          <span class="tab" :class="{'active':type==='email'}" @click="step(5,'email')">邮箱找回密码</span>
+          <i class="line" :style="'left:'+config[type].line.left+'px;'" v-if="mode==='win'"></i>
         </div>
         <div class="tabc">
           <div v-if="type=='mobile'" class="edit-box mobile">
           <span @click="visible.world = !visible.world" @click.stop>
               <em class="code">+{{params.area.code}}</em>
-              <i class="icon-2 fzm-icons fzm-icon-xiala"></i>
+              <i class="icon-2 fzm-icons fzm-icon-xiala" :class="{'icon-act':visible.world}"></i>
           </span>
             <ul v-if="visible.world" class="world">
               <li class="country" v-for="(item,index) in world" :key="index" @click="chooseArea(item)" @click.stop>
@@ -157,20 +182,30 @@
                    type="text" placeholder="请输入手机号" autocomplete="off" maxlength="13"/>
             <input v-else @blur="blur" @focus="focus" v-model="params.mobile.number" @input="input" type="text"
                    placeholder="请输入手机号" autocomplete="off" maxlength="11"/>
-            <i class="icon-2 mb-none fzm-icons fzm-icon-xiala"
-               style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
           </div>
           <div v-if="type=='email'" class="edit-box email">
             <input @blur="blur" @focus="focus" v-model="params.email.number" type="text" autocomplete="off"
                    placeholder="请输入邮箱"/>
-            <i class="icon-2 mb-none fzm-icons fzm-icon-xiala"
-               style="position:absolute;width:40px;height:40px;right:0;cursor:pointer;"></i>
           </div>
           <div class="edit-box item">
             <input v-model="params.verification.number" @blur="blur" @focus="focus" class="center" type="text"
                    autocomplete="off" placeholder="请输入验证码"/>
             <span class="btn-verification" v-if="params.verification.enable" @click="getVerification(null,'reset')">获取验证码</span>
             <span class="countdown" v-else>还剩<span>{{params.verification.seconds}}</span>s</span>
+
+          </div>
+          <div class="note"
+               v-if="type==='mobile'&&voiceShow&&params.verification.enable">
+            收不到短信?试试
+            <span
+                    @click="step('','mobile','verification','voice',function(){this.getVerification('voice','reset')})">
+                    语音认证
+                  </span>
+          </div>
+          <div
+                  class="note"
+                  v-if="voiceShow&&!params.verification.enable">
+            请注意接听语音认证 还剩<span>{{params.verification.seconds}}</span>s
           </div>
           <!--新密码-->
           <div class="edit-box item">
@@ -216,7 +251,8 @@
         return /^[\w|\W]{6,}$/.test(number);
     }
   }
-  let userinfoIsRemember = !!cookie.get('userinfo');
+
+  /*let userinfoIsRemember = !!cookie.get('userinfo');
   let userinfo = cookie.get('userinfo') && JSON.parse(cookie.get('userinfo')) || {
     area: {
       code: '86',
@@ -231,9 +267,10 @@
       number: "",
       password: ""
     }
-  };
+  };*/
 
   function createScript(res, vm, params) {
+    // console.log(res);
     if (res.isShow == 1) {
       Object.assign(params, {
         businessId: res.businessId
@@ -306,12 +343,9 @@
               });
               vm.api.login(params).then(res => {
                 vm.notify.success('登录成功!');
-                //如果选择了记住密码，则存储userinfo
-                if(vm.userinfoIsRemember){
-                  let {area, mobile, email} = vm.params;
-                  cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
-                }
-                //登录成功清空表单信息
+                //登录成功存储用户信息
+                vm.setInfo();
+                //登录成功清空用户信息
                 vm.resetInfo();
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, 'sms', false);
@@ -332,12 +366,9 @@
     else {
       vm.api.login(params).then(res => {
         vm.notify.success('登录成功!');
-        //如果选择了记住密码，则存储userinfo
-        if(vm.userinfoIsRemember){
-          let {area, mobile, email} = vm.params;
-          cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
-        }
-        //登录成功清空表单信息
+        //登录成功存储用户信息
+        vm.setInfo();
+        //登录成功清空用户信息
         vm.resetInfo();
         vm.visible.context = false;
         vm.step(0, 'mobile', null, 'sms', false);
@@ -398,9 +429,12 @@
       notify: {
         type: Object,
         default: {
-          success(){},
-          warn(){},
-          error(){}
+          success() {
+          },
+          warn() {
+          },
+          error() {
+          }
         }
       }
     },
@@ -416,9 +450,21 @@
         style: this.sty || "",
         chinaMobile: '',
         maxSeconds: this.maxsec || 60,
-        userinfoIsRemember,
+        userinfoIsRemember: '',
         params: {
-          ...userinfo,
+          area: {
+            code: '86',
+            name: '中国'
+          },
+          mobile: {
+            type: 'sms',
+            number: "",
+            password: ""
+          },
+          email: {
+            number: "",
+            password: ""
+          },
           verification: {
             number: "",
             enable: false,
@@ -426,7 +472,12 @@
           }
         },
         visible: {
+          //区号下拉列表
           world: false,
+          //手机下拉列表
+          phone: false,
+          //邮箱下拉列表
+          email: false,
           step: 1,
           login: 'verification',
           pass: false
@@ -435,6 +486,31 @@
           sms: [],
           email: [],
           voice: []
+        },
+        //语言验证码显示flag
+        voiceShow: false,
+        //用户数据
+        users: {
+          mobile: [
+            /*{
+              code:"",
+              number: "",
+              password: "",
+              isRemember: false
+            }*/
+          ],
+          email: [
+            /*{
+              number: "",
+              password: "",
+              isRemember: false
+            }*/
+          ]
+        },
+        //记住密码的状态（切换tab时用）
+        userinfoIsRemember2: {
+          mobile: false,
+          email: false
         }
       }
     },
@@ -446,6 +522,13 @@
     watch: {
       "params.verification.enable"(now, old) {
         if ((!now) && this.params.verification.seconds) {
+          //短信倒计时过程中，语音验证码隐藏。反之
+          if (this.params.mobile.type === 'sms') {
+            this.voiceShow = false;
+          } else {
+            this.voiceShow = true;
+          }
+          //倒计时函数
           this.countdown();
         }
       },
@@ -494,9 +577,13 @@
       close() {
         this.$emit('update:open', false);
         this.visible.world = false;
+        this.visible.phone = false;
+        this.visible.email = false;
       },
       winclick() {
         this.visible.world = false;
+        this.visible.phone = false;
+        this.visible.email = false;
       },
       focus(e) {
         e.target.parentNode.className += " focus"
@@ -565,7 +652,14 @@
             });
           }
           else {
-            vm.step(1);
+            //检查出账号不符合要求（前端正则）的时候，能够回退步骤重置状态
+            /*vm.step(1);*/
+            debounce && clearTimeout(debounce);
+            countdown && clearTimeout(countdown);
+            vm.params.verification.enable = true;
+            vm.params.verification.seconds = vm.maxSeconds;
+            vm.params.verification.number = "";
+            vm.visible.step = 1;
           }
         };
         debounce = setTimeout(cb, 300);
@@ -580,9 +674,26 @@
           countdown = setTimeout(vm.countdown, 1000);
           //本来这里可以直接传递一个max参数,但是iE9或者更早版本的浏览器不支持,所以这里吧max作为全局变量
         } else {
+          //倒计时结束，语音验证码显示
+          vm.voiceShow = true;
           vm.params.verification.enable = true;
           vm.params.verification.seconds = this.maxSeconds;
         }
+      },
+      switchMobile(item) {
+        this.params.area.code = item.code;
+        this.chinaMobile = item.number;
+        this.params.mobile.password = item.password;
+        this.visible.phone = !this.visible.phone;
+        this.userinfoIsRemember = this.userinfoIsRemember2[this.type] = item.isRemember;
+      },
+      switchEmail(item) {
+        this.params.email.number = item.number;
+        this.params.email.password = item.password;
+        this.userinfoIsRemember = item.isRemember;
+        this.visible.email = !this.visible.email;
+        this.input();
+        this.userinfoIsRemember = this.userinfoIsRemember2[this.type] = item.isRemember;
       },
       getVerification(type, codetype) {
         let vm = this;
@@ -606,17 +717,17 @@
         switch (type) {
           case 'sms':
             vm.api.getCodeBySms(params).then(res => {
-              createScript(res.data, vm, params)
+              createScript(res, vm, params)
             });
             break;
           case 'voice':
             vm.api.getCodeByVoice(params).then(res => {
-              createScript(res.data, vm, params)
+              createScript(res, vm, params)
             });
             break;
           case 'email':
             vm.api.getCodeByEmail(params).then(res => {
-              createScript(res.data, vm, params)
+              createScript(res, vm, params)
             });
             break;
         }
@@ -626,21 +737,28 @@
         let vm = this;
         if (number === 0) {
           // vm.params[vm.type].number = "";
+          if (type === vm.type) {
+            return;
+          }
+          this.userinfoIsRemember = this.userinfoIsRemember2[type];
           number = 1;
         }
         if (number === 5) {
           vm.params[vm.type].password = "";
         }
+
         debounce && clearTimeout(debounce);
         countdown && clearTimeout(countdown);
+        vm.voiceShow = false;
         vm.params.verification.enable = true;
         vm.params.verification.seconds = vm.maxSeconds;
         vm.params.verification.number = "";
         number && (vm.visible.step = number);
-        type && (vm.type != type) && (vm.type = type) && (vm.params[type].number = vm.params[type].number || vm.userinfoIsRemember && userinfo[type].number || '');
+        type && (vm.type != type) && (vm.type = type) && (vm.params[type].number = vm.params[type].number || '');
         login && (vm.visible.login = login) || (vm.visible.login = 'verification');
         mobiletype && (vm.params.mobile.type = mobiletype);
         (typeof callback === 'function') && callback.call(vm);
+
         if (number === 1) {
           vm.$nextTick(function () {
             vm.input();
@@ -651,8 +769,8 @@
             vm.$refs.step3input && vm.$refs.step3input.focus();
           })
         }
-        if (number===4) {
-          this.getVerification(null,'set_password')
+        if (number === 4) {
+          this.getVerification(null, 'set_password')
         }
       },
       setPassword() {
@@ -695,7 +813,7 @@
       },
       submit() {
         let vm = this;
-        if(!(vm.visibility && (vm.visible.step==2 || vm.visible.step == 3))){
+        if (!(vm.visibility && (vm.visible.step == 2 || vm.visible.step == 3))) {
           return;
         }
         let params = {
@@ -738,12 +856,9 @@
           if (vm.isRegistered) {
             vm.api.login(params).then(res => {
               this.notify.success('登录成功!');
-              //如果选择了记住密码，则存储userinfo
-              if(vm.userinfoIsRemember){
-                let {area, mobile, email} = vm.params;
-                cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
-              }
-              //登录成功清空表单信息
+              //登录成功存储用户信息
+              vm.setInfo();
+              //登录成功清空用户信息
               vm.resetInfo();
               vm.visible.context = false;
               vm.step(0, 'mobile', null, null, false);
@@ -760,12 +875,9 @@
               // vm.callback && vm.callback('register', res);
               vm.api.login(params).then(res => {
                 this.notify.success('登录成功!');
-                //如果选择了记住密码，则存储userinfo
-                if(vm.userinfoIsRemember){
-                  let {area, mobile, email} = vm.params;
-                  cookie.set('userinfo', JSON.stringify({area, mobile, email}), 864000);
-                }
-                //登录成功清空表单信息
+                //登录成功存储用户信息
+                vm.setInfo();
+                //登录成功清空用户信息
                 vm.resetInfo();
                 vm.visible.context = false;
                 vm.step(0, 'mobile', null, null, false);
@@ -796,14 +908,8 @@
       },
       //记住密码
       remember() {
-        const flag = this.userinfoIsRemember;
-        if (flag) {
-          cookie.remove('userinfo');
-          this.userinfoIsRemember = false;
-        } else {
-          //修改记住密码flag为true，但真正记住密码只在登录成功后才记录
-          this.userinfoIsRemember = true;
-        }
+        //修改flag，但真正记住密码只在登录成功后才记录
+        this.userinfoIsRemember = !this.userinfoIsRemember;
       },
       resetPassword() {
         let vm = this;
@@ -836,8 +942,42 @@
           vm.notify.error(err.message);
         });
       },
-      resetInfo(){
-        let userinfo1 = cookie.get('userinfo') && JSON.parse(cookie.get('userinfo')) || {
+      setInfo() {
+        //登录成功后存储账号信息到localStorage
+        let a = {
+          number: this.params[this.type].number,
+          password: (this.visible.step !== 2 && this.userinfoIsRemember) ? this.params[this.type].password : '',
+          isRemember: this.visible.step !== 2 ? this.userinfoIsRemember : ''
+        };
+        if (this.type === 'mobile') {
+          a.code = this.params.area.code;
+        }
+        //查找用户
+        let i;
+        if (this.users) {
+          i = this.users[this.type].findIndex((x) => x.number === this.params[this.type].number);
+        } else {
+          i = -1;
+        }
+        if (i > -1) {
+          //如果当前登录用户存在五个用户中,将此用户的信息更新，并排序
+          this.users[this.type][i] = a;
+          let b = this.users[this.type].splice(i, 1);
+          this.users[this.type].unshift(...b);
+        } else {
+          //如果当前登录用户不在五个用户中
+          this.users[this.type].unshift(a);
+          //用户最多存储五条
+          if (this.users[this.type].length > 5) {
+            this.users[this.type].pop();
+          }
+        }
+        //将最终用户数据存入localStorage
+        localStorage.setItem('users', JSON.stringify(this.users));
+      },
+      resetInfo() {
+        //登录成功后初始化所有信息，并将最近登录的账号显示出来
+        let userinfo = {
           area: {
             code: '86',
             name: '中国'
@@ -852,8 +992,23 @@
             password: ""
           }
         };
-        this.params={
-          ...userinfo1,
+
+        localStorage.getItem('users') && (this.users = JSON.parse(localStorage.getItem('users')));
+        if (this.users.mobile.length > 0) {
+          userinfo.area.code = this.users.mobile[0].code;
+          userinfo.mobile.number = this.users.mobile[0].number;
+          userinfo.mobile.password = this.users.mobile[0].password;
+        }
+        if (this.users.email.length > 0) {
+          let {isRemember, ...a} = this.users.email[0];
+          userinfo.email = a;
+        }
+
+        this.users.mobile.length > 0 && (this.userinfoIsRemember = this.userinfoIsRemember2.mobile = this.users.mobile[0].isRemember);
+        this.users.email.length > 0 && (this.userinfoIsRemember2.email = this.users.email[0].isRemember);
+
+        this.params = {
+          ...userinfo,
           verification: {
             number: "",
             enable: false,
@@ -866,11 +1021,28 @@
     created() {
       //将当前组件的上下文绑定到外面去(推荐绑定到vuex里面的store.state.lr.context中)
       this.context && this.context(this);
-      this.chinaMobile = sessionStorage.getItem('setParam')&&JSON.parse(sessionStorage.getItem('setParam')).mobile || '';
+
+      //读取localStorage初始化用户数据
+      this.resetInfo();
+
+      //H5传递手机邮箱参数并跳转过来时
+      if (sessionStorage.getItem('setParam')) {
+        let setParam = JSON.parse(sessionStorage.getItem('setParam'));
+        switch (setParam.type) {
+          case 1:
+            this.chinaMobile = setParam.mobile || '';
+            break;
+          case 2:
+            this.params.email.number = setParam.email || '';
+            this.type = 'email';
+            this.userinfoIsRemember = this.userinfoIsRemember2.email;
+            this.input();
+            break;
+        }
+      }
     }
   };
 </script>
-<!--in>./src/fzm-ui/packages/logreg/src/logreg.scss</in-->
 <style lang="scss">
   // .blink:after {
   //   content: "";
@@ -950,7 +1122,7 @@
       transform: rotate(180deg);
     }
     .full {
-      width: 190px;
+      width: 200px;
       margin: 0 auto;
       left: 0;
       right: 0;
@@ -1213,10 +1385,10 @@
                 right: 10px;
               }
             }
-            .remember-item{
+            .remember-item {
               display: flex;
               align-items: center;
-              .check{
+              .check {
                 width: 16px;
                 height: 16px;
                 border-radius: 4px;
@@ -1229,13 +1401,35 @@
           }
         }
       }
-      .step4{
+      .step4 {
         padding-left: 30px;
         padding-right: 30px;
-      }
-      .step5{
         .tabc{
+          .note {
+            padding-top: 5px;
+            color: #888888;
+            font-size: 14px;
+            span {
+              color: #CE181D;
+              cursor: pointer;
+              padding-left: 4px;
+            }
+          }
+        }
+      }
+      .step5 {
+        .tabc {
           padding: 0 30px;
+          .note {
+            padding-top: 5px;
+            color: #888888;
+            font-size: 14px;
+            span {
+              color: #CE181D;
+              cursor: pointer;
+              padding-left: 4px;
+            }
+          }
         }
       }
       .tabs {
@@ -1311,6 +1505,36 @@
       background-color: #262b31;
       box-sizing: border-box;
       color: #c8d3de;
+      .tabs {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        height: 32px;
+        font-size: 16px;
+        .tab {
+          width: 98px;
+          height: 32px;
+          /*background-color: #c8d3de;*/
+          background-color: #262b31;
+          border: 1px solid #c8d3de;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .tab:nth-of-type(1) {
+          border-top-left-radius: 5px;
+          border-bottom-left-radius: 5px;
+        }
+        .tab:nth-of-type(2) {
+          border-top-right-radius: 5px;
+          border-bottom-right-radius: 5px;
+        }
+        .active {
+          background-color: #c8d3de;
+          color: #2f343a;
+          font-weight: 700;
+        }
+      }
       .item {
         display: block;
         width: 100%;
@@ -1350,47 +1574,41 @@
       .default {
         color: #c8d3de;
         .tabs {
-          position: relative;
-          display: flex;
-          justify-content: center;
-          height: 32px;
-          font-size: 16px;
           .tab {
             width: 98px;
-            height: 32px;
-            /*background-color: #c8d3de;*/
-            background-color: #262b31;
-            border: 1px solid #c8d3de;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-          .tab:nth-of-type(1) {
-            border-top-left-radius: 5px;
-            border-bottom-left-radius: 5px;
-          }
-          .tab:nth-of-type(2) {
-            border-top-right-radius: 5px;
-            border-bottom-right-radius: 5px;
-          }
-          .active {
-            background-color: #c8d3de;
-            color: #2f343a;
-            font-weight: 700;
-          }
-          .line {
-            display: none;
           }
         }
         .tabc {
-          .mb-none {
-            display: none;
-          }
           .step1 {
             .email, .mobile {
               position: relative;
               overflow: visible;
               color: inherit;
+              .select {
+                position: absolute;
+                top: 42px;
+                right: 0;
+                border-radius: 5px;
+                background: #3A4048;
+                z-index: 10;
+                .select-item {
+                  height: 42px;
+                  line-height: 42px;
+                  padding-left: 18px;
+                  font-size: 17px;
+                  color: #C8D3DE;
+                }
+              }
+            }
+            .mobile {
+              .phone-select {
+                width: 270px;
+              }
+            }
+            .email {
+              .email-select {
+                width: 100%;
+              }
             }
           }
           .step2 {
@@ -1434,14 +1652,27 @@
           .step3 {
             height: 90px;
             i {
-              margin-right: 10px;
+              margin-right: 11px;
               color: #8a97a5;
             }
             .active {
               color: #c8d3de;
             }
             .remember-item {
-              display: none;
+              top: 70px;
+              color: #c8d3de;
+              font-size: 14px;
+              display: flex;
+              align-items: center;
+              .check {
+                width: 16px;
+                height: 16px;
+                border-radius: 4px;
+                background-color: #fff;
+                margin-right: 6px;
+                display: flex;
+                align-items: center;
+              }
             }
             .forget-item {
               color: #c8d3de;
@@ -1462,31 +1693,50 @@
             }
           }
         }
-        .nopassword{
+        .nopassword {
           border-top: none;
-          .step{
+          .step {
             color: #0ae;
           }
         }
       }
-      .step4{
-        .tabc{
-          .edit-box{
-            .btn-verification{
+      .step4 {
+        .tabs {
+          .tab {
+            border: none;
+            font-size: 16px;
+          }
+        }
+        .tabc {
+          .item {
+            font-size: 14px;
+          }
+          .edit-box {
+            .countdown, .btn-verification {
               position: static;
             }
           }
-          .control{
-            .back{
+          .control {
+            .back {
               flex: 1;
               margin-right: 20px;
               color: #c8d3de;
               border: 1px solid #c8d3de;
             }
-            .ok{
+            .ok {
               flex: 1;
               color: #262b31;
               background-color: #c8d3de;
+            }
+          }
+          .note {
+            padding-top: 5px;
+            color: #888888;
+            font-size: 14px;
+            span {
+              color: #0ae;
+              cursor: pointer;
+              padding-left: 4px;
             }
           }
         }
@@ -1494,10 +1744,14 @@
       .step5 {
         .tabs {
           display: flex;
-          justify-content: space-between;
           font-size: 16px;
+          width: 80%;
+          margin: 0 auto;
           .line {
             display: none;
+          }
+          .tab {
+            flex: 1;
           }
         }
         .tabc {
@@ -1505,6 +1759,16 @@
           .edit-box:nth-of-type(2) {
             margin-right: 110px;
             width: auto;
+          }
+          .note {
+            padding-top: 5px;
+            color: #888888;
+            font-size: 14px;
+            span {
+              color: #0ae;
+              cursor: pointer;
+              padding-left: 4px;
+            }
           }
         }
         .control {
