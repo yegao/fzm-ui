@@ -57,14 +57,14 @@
                   <input type="text" @blur="blur" @focus="focus" v-model="params.verification.number" autocomplete="off"
                          placeholder="请输入验证码"/>
                   <span class="btn-verification" v-if="params.verification.enable"
-                        @click="step(2,'mobile','verification','sms',function(){this.getVerification('sms','quick')})">获取验证码</span>
+                        @click="step(null,null,'verification','sms',function(){this.getVerification('sms','quick')})">获取验证码</span>
                   <span class="countdown" v-if="!voiceShow&&!params.verification.enable">还剩<span>{{params.verification.seconds}}</span>s</span>
                 </div>
                 <div class="note"
                      v-if="voiceShow&&params.verification.enable">
                   收不到短信?试试
                   <span
-                          @click="step('','mobile','verification','voice',function(){this.getVerification('voice','quick')})">
+                          @click="step(null,null,'verification','voice',function(){this.getVerification('voice','quick')})">
                     语音认证
                   </span>
                 </div>
@@ -133,14 +133,14 @@
             <input v-model="params.verification.number" class="most" type="text" @blur="blur" @focus="focus"
                    autocomplete="off" placeholder="请输入验证码"/>
             <span v-if="params.verification.enable" class="btn-verification"
-                  @click="getVerification(null,'set_password')">获取验证码</span>
-            <span v-else class="countdown">还剩<span>{{params.verification.seconds}}</span>s</span>
+                  @click="step(null,null,'verification','sms',function(){this.getVerification(null,'set_password')})">获取验证码</span>
+            <span v-if="!voiceShow&&!params.verification.enable" class="countdown">还剩<span>{{params.verification.seconds}}</span>s</span>
           </div>
           <div class="note"
                v-if="type==='mobile'&&voiceShow&&params.verification.enable">
             收不到短信?试试
             <span
-                    @click="step('','mobile','verification','voice',function(){this.getVerification('voice','set_password')})">
+                    @click="step(null,null,'verification','voice',function(){this.getVerification('voice','set_password')})">
                     语音认证
                   </span>
           </div>
@@ -190,21 +190,21 @@
           <div class="edit-box item">
             <input v-model="params.verification.number" @blur="blur" @focus="focus" class="center" type="text"
                    autocomplete="off" placeholder="请输入验证码"/>
-            <span class="btn-verification" v-if="params.verification.enable" @click="getVerification(null,'reset')">获取验证码</span>
-            <span class="countdown" v-else>还剩<span>{{params.verification.seconds}}</span>s</span>
+            <span class="btn-verification" v-if="params.verification.enable" @click="step(null,null,'verification','sms',function(){this.getVerification(null,'reset')})">获取验证码</span>
+            <span class="countdown" v-if="!voiceShow&&!params.verification.enable">还剩<span>{{params.verification.seconds}}</span>s</span>
 
           </div>
           <div class="note"
                v-if="type==='mobile'&&voiceShow&&params.verification.enable">
             收不到短信?试试
             <span
-                    @click="step('','mobile','verification','voice',function(){this.getVerification('voice','reset')})">
+                    @click="step(null,null,'verification','voice',function(){this.getVerification('voice','reset')})">
                     语音认证
                   </span>
           </div>
           <div
                   class="note"
-                  v-if="voiceShow&&!params.verification.enable">
+                  v-if="type==='mobile'&&voiceShow&&!params.verification.enable">
             请注意接听语音认证 还剩<span>{{params.verification.seconds}}</span>s
           </div>
           <!--新密码-->
