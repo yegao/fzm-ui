@@ -270,7 +270,6 @@
   };*/
 
   function createScript(res, vm, params) {
-    // console.log(res);
     if (res.isShow == 1) {
       Object.assign(params, {
         businessId: res.businessId
@@ -297,6 +296,7 @@
                   break;
                 case 'voice':
                   vm.api.getCodeByVoice(params).then(res => {
+                    vm.voiceShow = false;
                     vm.params.verification.enable = false;
                   }).catch(err => {
                     vm.notify.error(err.message);
@@ -749,7 +749,6 @@
 
         debounce && clearTimeout(debounce);
         countdown && clearTimeout(countdown);
-        vm.voiceShow = false;
         vm.params.verification.enable = true;
         vm.params.verification.seconds = vm.maxSeconds;
         vm.params.verification.number = "";
@@ -1329,6 +1328,44 @@
               width: 290px;
               overflow: visible;
               color: inherit;
+              .select{
+                position: absolute;
+                top: 42px;
+                right: 0;
+                border-radius: 4px;
+                box-shadow: 0 0 9px rgba(206, 24, 29, .2);
+                z-index: 99;
+                overflow-y: auto;
+                max-height: 200px;
+                background-color: #FFFFFF;
+                .select-item {
+                  width: 100%;
+                  height: 40px;
+                  padding-left: 16px;
+                  line-height: 2.5;
+                  font-size: 16px;
+                  color: rgba(51, 51, 51, 1);
+                  &:hover {
+                    background-color: #FEF7F7;
+                  }
+                  em {
+                    display: inline-block;
+                    font-style: normal;
+                    width: 44px;
+                  }
+
+                }
+              }
+            }
+            .mobile {
+              .phone-select {
+                width: 200px;
+              }
+            }
+            .email {
+              .email-select {
+                width: 100%;
+              }
             }
             input {
               right: 40px;
@@ -1461,8 +1498,6 @@
           .country {
             color: rgba(51, 51, 51, 1);
             &:hover {
-              height: 60px;
-              line-height: 3.75;
               background-color: #FEF7F7;
             }
           }
